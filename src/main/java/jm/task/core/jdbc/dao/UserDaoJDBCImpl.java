@@ -25,9 +25,16 @@ public class UserDaoJDBCImpl implements UserDao {
         //команда для создания таблицы, если не создана
         try (PreparedStatement preparedStatement = connection.prepareStatement(commandSQL)){
                 preparedStatement.executeUpdate(commandSQL);
+                connection.setAutoCommit(false);
+                connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Ошибка при создании таблицы!");
+            try {
+                connection.rollback();
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
+            }
         }
     }
 
@@ -35,9 +42,16 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS users");
             //удаление таблицы
+            connection.setAutoCommit(false);
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Ошибка при удалении таблицы");
+            try {
+                connection.rollback();
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
+            }
         }
     }
 
@@ -48,9 +62,15 @@ public class UserDaoJDBCImpl implements UserDao {
             prepareStatement.setByte(3, age);
             prepareStatement.executeUpdate();
             //добавление пользователей с созданием нужных полей
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Ошибка при добавлении пользователя!");
+            try {
+                connection.rollback();
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
+            }
         }
     }
 
@@ -58,9 +78,15 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Statement statement = connection.createStatement()) {
             statement.execute("DELETE FROM users WHERE id");
             //удаление пользователя по айди
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Ошибка! Не вышло удалить пользователя по ID!");
+            try {
+                connection.rollback();
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
+            }
         }
     }
 
@@ -89,9 +115,15 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Statement statement = connection.createStatement()) {
             statement.execute("TRUNCATE TABLE users");
             //очистка таблицы
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Ошибка при очистке таблицы!");
+            try {
+                connection.rollback();
+            } catch (SQLException sqlEx) {
+                sqlEx.printStackTrace();
+            }
         }
     }
 }
